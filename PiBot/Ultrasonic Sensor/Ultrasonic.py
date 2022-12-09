@@ -1,11 +1,14 @@
 import RPi.GPIO as GPIO
+import LCD1602 as LCD
 import time
 
-TRIG = 16
-ECHO = 18
+LCD.init(0x27,1)
+
+TRIG = 8
+ECHO = 7
 
 def setup():
-    GPIO.setmode(GPIO.BOARD)
+    GPIO.setmode(GPIO.BCM)
     GPIO.setup(TRIG, GPIO.OUT)
     GPIO.setup(ECHO, GPIO.IN)
 
@@ -17,25 +20,25 @@ def distance():
     time.sleep(0.00001)
     GPIO.output(TRIG, 0)
 
-
     while GPIO.input(ECHO) == 0:
         a = 0
         time1 = time.time()
     while GPIO.input(ECHO) == 1:
         a = 1
         time2 = time.time()
-
         during = time2 - time1
     return during * 340 / 2 * 100
 
 def loop():
     while True:
         dis = distance()
-        print ('Distance: %.2f' % dis)
+        LCD.write(0,0,'Distance: %.2f' % dis)
         time.sleep(0.3)
 
 def destroy():
     GPIO.cleanup()
+    LCD.clear()
+    LCD.write(5,0,'...')
 
 if __name__ == "__main__":
     setup()
